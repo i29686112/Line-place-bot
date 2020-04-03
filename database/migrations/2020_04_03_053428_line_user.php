@@ -14,7 +14,7 @@ class LineUser extends Migration
     public function up()
     {
         Schema::create('line_users', function (Blueprint $table) {
-            $table->id();
+            $table->integer("line_id")->autoIncrement();
             $table->string("name");
             $table->timestamps();
         });
