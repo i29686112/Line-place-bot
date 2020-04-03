@@ -18,6 +18,7 @@ class ModelTest extends TestCase
     {
         $savedPlace=factory(SavedPlaces::class)->create();
 
+        echo json_encode($savedPlace);
         $this->assertTrue(is_a($savedPlace,SavedPlaces::class));
     }
 
