@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Line place saver'),
 
-    'log'=>'errorlog',
+    'log'=>'error_log',
     /*
     |--------------------------------------------------------------------------
     | Application Environment
