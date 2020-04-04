@@ -54,6 +54,20 @@ class ConversationUtility
     }
 
 
+    public function restartStep()
+    {
+
+        if ($this->currentConversation) {
+            //close exist
+            $this->currentConversation->step = 0;
+            return $this->currentConversation->save();
+        }
+
+        return false;
+
+    }
+
+
     public function toNextStep()
     {
 

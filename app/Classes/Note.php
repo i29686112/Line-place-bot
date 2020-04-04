@@ -8,6 +8,8 @@ class Note
 {
 
     public $currentURL;
+
+    public $suggestName;
     public $suggestCategories;
     public $suggestAddresses;
 

@@ -53,11 +53,42 @@ class LineWebHookController extends Controller
 
                 case 2:
                     $conversationUtility->setDataForCurrentStep('choosePlaceCategory',$line->inputRawText);
-                    $conversationUtility->saveConversationResultAndClose();
+                    $conversationUtility->toNextStep();
 
-                    $resultText="You set the category:{$line->inputRawText}\n";
-                    $resultText.= "the process is end";
+                    $resultText="You set the category:{$line->inputRawText}\n\n";
+
+
+                    $note=$conversationUtility->getNoteObjectFromCurrentConversation();
+
+                    $resultText.="Your input about url:{$note->currentURL}\n\n";
+                    $resultText.= "Name:{$note->choosePlaceName}\n";
+                    $resultText.= "Address:{$note->choosePlaceAddress}\n";
+                    $resultText.= "Category:{$note->choosePlaceCategory}\n\n";
+                    $resultText.="type `edit` to update, or type any word to submit";
+
                     $this->sendTextToLineUser($lineBot, $line, $resultText);
+
+                    break;
+
+                case 3:
+
+                    if($line->inputRawText!=='edit'){
+
+                        $conversationUtility->saveConversationResultAndClose();
+                        $resultText="Saved!";
+                        $this->sendTextToLineUser($lineBot, $line, $resultText);
+
+                    }else{
+
+                        $conversationUtility->restartStep();
+
+                        //update again
+                        $note=$conversationUtility->getNoteObjectFromCurrentConversation();
+                        $resultText="Ok, let us start again!\n\n";
+
+                        $resultText .= 'Check the name of the place, suggest:' . json_encode($note->suggestAddresses);
+                        $this->sendTextToLineUser($lineBot, $line, $resultText);
+                    }
 
                     break;
             }
@@ -89,13 +120,14 @@ class LineWebHookController extends Controller
         $conversation = new ConversationUtility($line);
 
 
-        $resultText = 'Check the name of the place, suggest:' . json_encode($parseNames);
-
-
         $conversation->setDataForCurrentStep('currentURL', $line->getPlace()->url);
+        $conversation->setDataForCurrentStep('suggestNames', $parseNames);
+
         $conversation->setDataForCurrentStep('suggestAddresses', $parseAddresses);
         $conversation->setDataForCurrentStep('suggestCategories', $parseCategories);
 
+
+        $resultText = 'Check the name of the place, suggest:' . json_encode($parseNames);
         $this->sendTextToLineUser($lineBot, $line, $resultText);
 
 
