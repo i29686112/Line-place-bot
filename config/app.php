@@ -13,8 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Line place saver'),
 
+    'log'=>'errorlog',
     /*
     |--------------------------------------------------------------------------
     | Application Environment
