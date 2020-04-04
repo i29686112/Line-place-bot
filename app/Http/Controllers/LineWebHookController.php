@@ -18,6 +18,9 @@ class LineWebHookController extends Controller
     public function index(Request $request, LINEBot $lineBot){
 
 
+        if (!$request->all()) return 'empty input';
+
+
         $line = new Line(json_encode($request->all()));
 
         $resultText='';
