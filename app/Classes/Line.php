@@ -4,7 +4,7 @@
 namespace App\Classes;
 
 
-use App\Classes\Exceptions\NotURLStringException;
+use App\Exceptions\NotURLStringException;
 use App\Models\LineUsers;
 use App\Models\Places;
 
@@ -13,13 +13,18 @@ class Line
 
     /** @var Places */
     private $place;
-    private $rawInput;
+
+    public $inputRawText;
+    public $userId;
+
+
+
+    private $inputHttpText;
     private $jsonObject;
 
     /** @var LineUsers */
     private $user;
     private $replyToken;
-    public $userId;
 
     /**
      * Line constructor.
@@ -28,14 +33,14 @@ class Line
     public function __construct($webHookResponse)
     {
 
-        $this->rawInput=$webHookResponse;
+        $this->inputHttpText=$webHookResponse;
         $this->jsonObject=json_decode($webHookResponse);
 
         $this->setReplyToken();
+        $this->setInputRawText();
 
         $this->setUser();
         $this->setPlace();
-
 
     }
 
@@ -94,16 +99,16 @@ class Line
 
         try{
 
-            if($this->getURLFromInput()===false) throw new NotURLStringException();
+            if(filter_var($this->inputRawText,FILTER_VALIDATE_URL)===false) throw new NotURLStringException();
 
-            if($existPlace = Places::where(['add_user_id'=>$this->user->line_id,'url'=>$this->getURLFromInput()])->first()){
+            if($existPlace = Places::where(['add_user_id'=>$this->user->line_id,'url'=>$this->inputRawText])->first()){
 
                 return $existPlace;
             }
 
             $newPlace = new Places();
 
-            $newPlace->url = $this->getURLFromInput();
+            $newPlace->url = $this->inputRawText;
 
             $newPlace->add_user_id = $this->user->line_id;
 
@@ -119,12 +124,15 @@ class Line
 
     }
 
-    /**
-     * @return mixed
-     */
-    private function getURLFromInput()
+
+    public function getInputRawText()
     {
-        return filter_var($this->jsonObject->events[0]->message->text,FILTER_VALIDATE_URL);
+        return $this->inputRawText;
+    }
+
+    private function setInputRawText()
+    {
+        $this->inputRawText=$this->jsonObject->events[0]->message->text;
     }
 
     private function setReplyToken()

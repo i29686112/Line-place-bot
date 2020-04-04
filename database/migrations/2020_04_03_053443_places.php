@@ -19,6 +19,10 @@ class Places extends Migration
 
             $table->string('name')->nullable();
             $table->text('url');
+
+            $table->string('address',150)->nullable();
+            $table->string('category_name',100)->nullable();
+
             $table->string('add_user_id',100)->nullable();
             $table->integer('category_id')->nullable();
             $table->timestamps();

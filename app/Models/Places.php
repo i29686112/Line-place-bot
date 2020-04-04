@@ -9,7 +9,7 @@ class Places extends Model
     //
 
     protected $fillable = [
-        'name','url','add_user_id','category_id'
+        'name','url','add_user_id','category_id','address','category_name'
     ];
 
 

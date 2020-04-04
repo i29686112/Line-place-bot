@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Classes\Exceptions;
+namespace App\Exceptions;
 
 
 class NotURLStringException extends \Exception
