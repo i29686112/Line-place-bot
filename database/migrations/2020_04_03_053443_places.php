@@ -32,6 +32,6 @@ class Places extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('saved_places');
+        Schema::dropIfExists('places');
     }
 }

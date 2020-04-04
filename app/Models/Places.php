@@ -15,7 +15,7 @@ class Places extends Model
 
     public function user()
     {
-        return $this->hasOne('Models\LineUsers','id','add_user_id');
+        return $this->hasOne('Models\LineUsers','line_id','add_user_id');
     }
 
     public function category()
