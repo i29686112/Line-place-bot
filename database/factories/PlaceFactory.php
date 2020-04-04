@@ -1,13 +1,14 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+/** @var Factory $factory */
 
 use App\Models\Categories;
 use App\Models\LineUsers;
-use App\Models\SavedPlaces;
+use App\Models\Places;
 use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factory;
 
-$factory->define(SavedPlaces::class, function (Faker $faker) {
+$factory->define(Places::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'url' => $faker->url,

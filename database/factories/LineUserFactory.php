@@ -4,7 +4,7 @@
 
 use App\Models\Categories;
 use App\Models\LineUsers;
-use App\Models\SavedPlaces;
+use App\Models\Places;
 use Faker\Generator as Faker;
 
 $factory->define(LineUsers::class, function (Faker $faker) {

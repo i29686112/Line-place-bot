@@ -4,17 +4,21 @@
 namespace App\Classes;
 
 
+use App\Classes\Exceptions\NotURLStringException;
 use App\Models\LineUsers;
+use App\Models\Places;
 
 class Line
 {
 
-    private $url;
+    /** @var Places */
+    private $place;
     private $rawInput;
     private $jsonObject;
 
     /** @var LineUsers */
     private $user;
+    private $replyToken;
 
     /**
      * Line constructor.
@@ -26,23 +30,26 @@ class Line
         $this->rawInput=$webHookResponse;
         $this->jsonObject=json_decode($webHookResponse);
 
-        $this->setURL();
+        $this->setReplyToken();
 
         $this->setUser();
+        $this->setPlace();
 
 
     }
 
-    public function getURL()
+    public function getPlace()
     {
 
-        return $this->url;
+        return $this->place;
     }
 
-    private function setURL()
+    private function setPlace()
     {
 
-        $this->url=$this->jsonObject->events[0]->message->text;
+
+        $this->place= ($this->findOrSavePlace())?:null;
+
 
     }
 
@@ -65,13 +72,11 @@ class Line
      */
     private function findOrSaveUser()
     {
-        $lineUser = new LineUsers();
 
-        $lineUser->line_id = $this->getUserId();
-
-        $lineUser->save();
-
-        return $lineUser;
+        return $flight = LineUsers::firstOrCreate(
+            ['line_id' => $this->getUserId()],
+            ['line_id' => $this->getUserId()]
+        );
     }
 
     /**
@@ -80,5 +85,55 @@ class Line
     private function getUserId()
     {
         return $this->jsonObject->events[0]->source->userId;
+    }
+
+    private function findOrSavePlace()
+    {
+
+        try{
+
+            if($this->getURLFromInput()===false) throw new NotURLStringException();
+
+            if($existPlace = Places::where(['add_user_id'=>$this->user->line_id,'url'=>$this->getURLFromInput()])->first()){
+
+                return $existPlace;
+            }
+
+            $newPlace = new Places();
+
+            $newPlace->url = $this->getURLFromInput();
+
+            $newPlace->add_user_id = $this->user->line_id;
+
+            $newPlace->save();
+
+            return $newPlace;
+
+        }catch(NotURLStringException $e){
+
+            return null;
+        }
+
+
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getURLFromInput()
+    {
+        return filter_var($this->jsonObject->events[0]->message->text,FILTER_VALIDATE_URL);
+    }
+
+    private function setReplyToken()
+    {
+        $this->replyToken= $this->jsonObject->events[0]->replyToken;
+
+    }
+
+    public function getReplyToken()
+    {
+        return $this->replyToken;
+
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Models\SavedPlaces;
+use App\Models\Places;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,10 +16,10 @@ class ModelTest extends TestCase
      */
     public function testModelIsWorking()
     {
-        $savedPlace=factory(SavedPlaces::class)->create();
+        $savedPlace=factory(Places::class)->create();
 
         echo json_encode($savedPlace);
-        $this->assertTrue(is_a($savedPlace,SavedPlaces::class));
+        $this->assertTrue(is_a($savedPlace,Places::class));
     }
 
     protected function setUp():void

@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\SavedPlaces;
+use App\Models\Places;
 use Illuminate\Database\Seeder;
 
-class SavedPlaceSeeder extends Seeder
+class PlaceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class SavedPlaceSeeder extends Seeder
         //
 
         foreach ([1,2,3] as $category_id) {
-            factory(SavedPlaces::class)->create(['category_id'=>$category_id]);
+            factory(Places::class)->create(['category_id'=>$category_id]);
 
         }
 

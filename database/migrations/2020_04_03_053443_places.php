@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class SavedPlace extends Migration
+class Places extends Migration
 {
     /**
      * Run the migrations.
@@ -14,13 +14,13 @@ class SavedPlace extends Migration
      */
     public function up()
     {
-        Schema::create('saved_places', function (Blueprint $table) {
+        Schema::create('places', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->text('url');
-            $table->integer('add_user_id');
-            $table->integer('category_id');
+            $table->string('add_user_id',100)->nullable();
+            $table->integer('category_id')->nullable();
             $table->timestamps();
         });
     }
