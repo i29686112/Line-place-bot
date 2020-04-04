@@ -8,7 +8,7 @@ class Conversations extends Model
 {
     //
     protected $fillable = [
-        'note','type','user_id','status'
+        'note','type','user_id','status','step'
     ];
 
 

@@ -17,6 +17,8 @@ class Conversations extends Migration
         Schema::create('conversations', function (Blueprint $table) {
             $table->id()->autoIncrement();
 
+            $table->integer('step')->default(0);
+
             $table->string('type');
             $table->text('note')->comment('In JSON format.');
             $table->string('user_id',100);

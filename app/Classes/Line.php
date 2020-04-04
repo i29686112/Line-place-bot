@@ -19,6 +19,7 @@ class Line
     /** @var LineUsers */
     private $user;
     private $replyToken;
+    public $userId;
 
     /**
      * Line constructor.
@@ -64,6 +65,7 @@ class Line
 
         $this->user= $this->findOrSaveUser();
 
+        $this->userId=$this->user->line_id;
 
     }
 
