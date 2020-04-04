@@ -4,8 +4,11 @@
 namespace App\Classes;
 
 
+use GuzzleHttp\Client;
+
 class HtmlParser
 {
+    private $url;
 
     /**
      * HtmlParser constructor.
@@ -13,24 +16,38 @@ class HtmlParser
      */
     public function __construct($url)
     {
+        $this->url=$url;
     }
 
     public function getPlaceSuggestNames()
     {
-        return ['name','foo','boo'];
+
+        $response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
+
+        return json_decode($response->getBody(),true);
+
 
     }
 
 
     public function getPlaceSuggestCategories()
     {
-        return ['category','foo','boo'];
+
+        $response = (new Client())->request('get',env("CATEGORY_PARSE_URL")."?url=". $this->url);
+
+        return json_decode($response->getBody(),true);
+        //return ['category','foo','boo'];
 
     }
 
     public function getPlaceSuggestAddresses()
     {
-        return ['address','foo','boo'];
+
+        $response = (new Client())->request('get',env("ADDRESS_PARSE_URL")."?url=". $this->url);
+
+        return json_decode($response->getBody(),true);
+
+        //return ['address','foo','boo'];
 
     }
 }

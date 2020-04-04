@@ -3,6 +3,7 @@
 namespace Tests\Http\Controllers;
 
 use App\Classes\ConversationUtility;
+use App\Classes\DisplayText;
 use App\Classes\Line;
 use App\Http\Controllers\LineWebHookController;
 use App\models\Conversations;
@@ -61,14 +62,14 @@ class LineWebHookControllerTest extends TestCase
         $input4=str_replace("https://keketravel.cc/2988/?from=instant_article","desire category",$input);
         $response = $this->json('post','/', json_decode($input4,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'You set the category') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::YOU_SET_THE_CATEGORY) !== false);
 
 
         //answer desired address
         $input5=str_replace("https://keketravel.cc/2988/?from=instant_article","edit",$input);
         $response = $this->json('post','/', json_decode($input5,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'Ok, let us start again') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::OK_LET_US_START_AGAIN) !== false);
 
 
 
@@ -123,14 +124,14 @@ class LineWebHookControllerTest extends TestCase
         $input4=str_replace("https://keketravel.cc/2988/?from=instant_article","desire category",$input);
         $response = $this->json('post','/', json_decode($input4,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'You set the category') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::YOU_SET_THE_CATEGORY) !== false);
 
 
         //answer desired address
         $input5=str_replace("https://keketravel.cc/2988/?from=instant_article","ok",$input);
         $response = $this->json('post','/', json_decode($input5,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'Saved') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::SAVED) !== false);
 
 
 
@@ -185,7 +186,7 @@ class LineWebHookControllerTest extends TestCase
         $input3=str_replace("https://keketravel.cc/2988/?from=instant_article","desire category",$input);
         $response = $this->json('post','/', json_decode($input3,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'You set the category') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::YOU_SET_THE_CATEGORY) !== false);
 
 
         $conversation = Conversations::where(['type'=>'url','status' => 'open', 'user_id' => $testLineId])->first();
@@ -239,7 +240,7 @@ class LineWebHookControllerTest extends TestCase
         $input3=str_replace("https://keketravel.cc/2988/?from=instant_article","desire address name",$input);
         $response = $this->json('post','/', json_decode($input3,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'You set the address') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::YOU_SET_THE_ADDRESS) !== false);
 
 
         $conversation = Conversations::where(['type'=>'url','status' => 'open', 'user_id' => $testLineId])->first();
@@ -286,7 +287,7 @@ class LineWebHookControllerTest extends TestCase
         $input=str_replace("https://keketravel.cc/2988/?from=instant_article","desire place name",$input);
         $response = $this->json('post','/', json_decode($input,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'You set the name') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::YOU_SET_THE_NAME) !== false);
 
 
         $conversation = Conversations::where(['type'=>'url','status' => 'open', 'user_id' => $testLineId])->first();
@@ -331,7 +332,7 @@ class LineWebHookControllerTest extends TestCase
         //it should close exist conversation
         $response = $this->json('post','/', json_decode($input,true));
         $response->assertStatus(200);
-        $this->assertTrue(stripos($response->getContent(),'Check the name of the place') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::CHECK_THE_NAME_OF_THE_PLACE_SUGGEST) !== false);
 
 
         $conversation = Conversations::where(['type'=>'url','status' => 'open', 'user_id' => $testLineId])->first();
@@ -376,7 +377,7 @@ class LineWebHookControllerTest extends TestCase
         $response = $this->json('post','/', json_decode($input,true));
         $response->assertStatus(200);
 
-        $this->assertTrue(stripos($response->getContent(),'Check the name of the place') !== false);
+        $this->assertTrue(stripos($response->getContent(),DisplayText::CHECK_THE_NAME_OF_THE_PLACE_SUGGEST) !== false);
 
     }
 

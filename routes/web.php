@@ -19,3 +19,12 @@ Route::get('/', function () {
 
 
 Route::post('/', "LineWebHookController@index");
+
+Route::get('/parser', function () {
+    return json_encode(['foo','boo']);
+});
+
+
+Route::get('/categoryParser', function () {
+    return json_encode(['景點','餐廳','住宿']);
+});
