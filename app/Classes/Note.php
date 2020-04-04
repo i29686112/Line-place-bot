@@ -9,7 +9,7 @@ class Note
 
     public $currentURL;
 
-    public $suggestName;
+    public $suggestNames;
     public $suggestCategories;
     public $suggestAddresses;
 

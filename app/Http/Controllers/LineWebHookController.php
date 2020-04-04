@@ -9,6 +9,11 @@ use App\Exceptions\SendMessageToUserException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use LINE\LINEBot;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use ReflectionException;
 
 class LineWebHookController extends Controller
@@ -18,12 +23,10 @@ class LineWebHookController extends Controller
     public function index(Request $request, LINEBot $lineBot){
 
 
-        if (!$request->all()) return 'empty input';
+        if (!$request->all()) return 'Empty input';
 
 
         $line = new Line(json_encode($request->all()));
-
-        $resultText='';
 
         if($line->getPlace()){
             $resultText = $this->newPlaceStoreConversation($lineBot, $line);
@@ -39,8 +42,17 @@ class LineWebHookController extends Controller
                     $conversationUtility->toNextStep();
 
                     $resultText="You set the name:{$line->inputRawText}\n";
-                    $resultText.= "let's set the address of the place, suggest:" . json_encode($conversationUtility->getNoteObjectFromCurrentConversation()->suggestAddresses);
-                    $this->sendTextToLineUser($lineBot, $line, $resultText);
+
+                    $resultText.= "let's set the address of the place, suggests:";
+
+                    $buttons = new ButtonTemplateBuilder(
+                        '',
+                        $resultText,
+                        null,
+                        $this->getMessageTemplateActionBuilderFromArray($conversationUtility->getNoteObjectFromCurrentConversation()->suggestNames)
+                    );
+
+                    $this->sendTemplateToLineUser($lineBot, $line, new TemplateMessageBuilder("請在手機上看你的訊息", $buttons));
 
                     break;
 
@@ -49,8 +61,16 @@ class LineWebHookController extends Controller
                     $conversationUtility->toNextStep();
 
                     $resultText="You set the address:{$line->inputRawText}\n";
-                    $resultText.= "let's set the category of the place, suggest:" . json_encode($conversationUtility->getNoteObjectFromCurrentConversation()->suggestCategories);
-                    $this->sendTextToLineUser($lineBot, $line, $resultText);
+                    $resultText.= "let's set the category of the place, suggest:";
+
+                    $buttons = new ButtonTemplateBuilder(
+                        '',
+                        $resultText,
+                        null,
+                        $this->getMessageTemplateActionBuilderFromArray($conversationUtility->getNoteObjectFromCurrentConversation()->suggestCategories)
+                    );
+
+                    $this->sendTemplateToLineUser($lineBot, $line, new TemplateMessageBuilder("請在手機上看你的訊息", $buttons));
 
                     break;
 
@@ -67,15 +87,20 @@ class LineWebHookController extends Controller
                     $resultText.= "Name:{$note->choosePlaceName}\n";
                     $resultText.= "Address:{$note->choosePlaceAddress}\n";
                     $resultText.= "Category:{$note->choosePlaceCategory}\n\n";
-                    $resultText.="type `edit` to update, or type any word to submit";
+                    $resultText.="Click `Yes` for save, `No` for edit.";
 
-                    $this->sendTextToLineUser($lineBot, $line, $resultText);
+                    $buttons = new ConfirmTemplateBuilder($resultText, array(
+                        new MessageTemplateActionBuilder("Yes, Save it!", "save"),
+                        new MessageTemplateActionBuilder("No, I want edit","edit")
+                    ));
+
+                    $this->sendTemplateToLineUser($lineBot, $line, new TemplateMessageBuilder("請在手機上看你的訊息", $buttons));
 
                     break;
 
                 case 3:
 
-                    if($line->inputRawText!=='edit'){
+                    if(stripos($line->inputRawText,'edit')===false){
 
                         $conversationUtility->saveConversationResultAndClose();
                         $resultText="Saved!";
@@ -86,11 +111,18 @@ class LineWebHookController extends Controller
                         $conversationUtility->restartStep();
 
                         //update again
-                        $note=$conversationUtility->getNoteObjectFromCurrentConversation();
                         $resultText="Ok, let us start again!\n\n";
+                        $resultText .= 'Check the name of the place, suggest:';
 
-                        $resultText .= 'Check the name of the place, suggest:' . json_encode($note->suggestAddresses);
-                        $this->sendTextToLineUser($lineBot, $line, $resultText);
+                        $buttons = new ButtonTemplateBuilder(
+                            '',
+                            $resultText,
+                            null,
+                            $this->getMessageTemplateActionBuilderFromArray($conversationUtility->getNoteObjectFromCurrentConversation()->suggestAddresses)
+                        );
+
+                        $this->sendTemplateToLineUser($lineBot, $line, new TemplateMessageBuilder("請在手機上看你的訊息", $buttons));
+
                     }
 
                     break;
@@ -130,12 +162,55 @@ class LineWebHookController extends Controller
         $conversation->setDataForCurrentStep('suggestCategories', $parseCategories);
 
 
-        $resultText = 'Check the name of the place, suggest:' . json_encode($parseNames);
-        $this->sendTextToLineUser($lineBot, $line, $resultText);
+        $resultText = 'Check the name of the place, suggest:';
 
+
+        $buttons = new ButtonTemplateBuilder(
+            '',
+            $resultText,
+            null,
+            $this->getMessageTemplateActionBuilderFromArray($parseNames)
+        );
+
+        $this->sendTemplateToLineUser($lineBot, $line, new TemplateMessageBuilder("請在手機上看你的訊息", $buttons));
 
         return $resultText;
     }
+
+
+    /**
+     * @param LINEBot $lineBot
+     * @param Line $line
+     * @param TemplateMessageBuilder $templateMessageBuilder
+     * @return bool
+     */
+    private function sendTemplateToLineUser(LINEBot $lineBot, Line $line, TemplateMessageBuilder $templateMessageBuilder): bool
+    {
+
+        try {
+
+            $response = $lineBot->replyMessage($line->getReplyToken(), $templateMessageBuilder);
+
+            if (!$response->isSucceeded()) {
+                throw new SendMessageToUserException($response->getRawBody());
+            }
+
+            return true;
+
+        } catch (SendMessageToUserException $e) {
+
+            log::error('\n\n send message to user failed;\n\n ');
+            log::error($e->getMessage());
+
+            return false;
+        } catch (ReflectionException $e){
+            log::error($e->getMessage());
+
+            return false;
+        }
+
+    }
+
 
     /**
      * @param LINEBot $lineBot
@@ -168,6 +243,19 @@ class LineWebHookController extends Controller
             return false;
         }
 
+    }
+
+    /**
+     * @param $array
+     * @return MessageTemplateActionBuilder[]
+     */
+    private function getMessageTemplateActionBuilderFromArray(Array $array): array
+    {
+        return array_map(function ($address) {
+
+            return new MessageTemplateActionBuilder($address, $address);
+
+        }, $array);
     }
 
 
