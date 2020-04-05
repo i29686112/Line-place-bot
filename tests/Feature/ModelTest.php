@@ -22,6 +22,15 @@ class ModelTest extends TestCase
         $this->assertTrue(is_a($savedPlace,Places::class));
     }
 
+    public function testPython(){
+
+        $jsondata= exec("/usr/bin/python  resources/python/test.py 'https://www.tutorialspoint.com/python/python_command_line_arguments.htm'");
+
+        echo $jsondata ;
+
+        $this->assertTrue(strlen($jsondata)>0);
+    }
+
     protected function setUp():void
     {
         parent::setUp();

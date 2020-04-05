@@ -22,9 +22,15 @@ class HtmlParser
     public function getPlaceSuggestNames()
     {
 
-        $response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
+        //$response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
 
-        return json_decode($response->getBody(),true);
+        $jsondata= exec("/usr/bin/python  resources/python/test.py 'https://www.tutorialspoint.com/python/python_command_line_arguments.htm'");
+
+
+        //return json_decode($response->getBody(),true);
+
+
+        return json_decode($jsondata,true);
 
 
     }
