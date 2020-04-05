@@ -1,5 +1,7 @@
 <?php
 
+use App\Classes\HtmlParser;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,4 +29,11 @@ Route::get('/parser', function () {
 
 Route::get('/categoryParser', function () {
     return json_encode(['景點','餐廳','住宿']);
+});
+
+
+Route::get('/pyTest', function () {
+
+    $htmlParser = new HtmlParser('www.google.com');
+    return $htmlParser->getPlaceSuggestNames();
 });

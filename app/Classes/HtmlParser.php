@@ -24,7 +24,7 @@ class HtmlParser
 
         //$response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
 
-        $jsondata= exec("/usr/bin/python  resources/python/test.py 'https://www.tutorialspoint.com/python/python_command_line_arguments.htm'");
+        $jsondata= exec("/usr/bin/python  ".env('PY_FILE_PATH'). " 'https://www.tutorialspoint.com/python/python_command_line_arguments.htm'");
 
 
         //return json_decode($response->getBody(),true);
