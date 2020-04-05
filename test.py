@@ -10,5 +10,6 @@ if r.status_code == requests.codes.ok:
 
   stories = soup.find_all('a', class_='story-title')
   for s in stories:
-    print("標題：" + s.text)
-    print("網址：" + s.get('href'))
+    print(u"標題：" + s.text)
+    #print("網址：" + s.get('href'))
+
