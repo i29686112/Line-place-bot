@@ -19,7 +19,7 @@ class HtmlParser
         $this->url=$url;
     }
 
-    public function getPlaceSuggestNames()
+    public function getPlaceSuggestNamesFromPython()
     {
 
         //$response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
@@ -30,8 +30,18 @@ class HtmlParser
         //return json_decode($response->getBody(),true);
 
 
-        return json_decode($jsondata,true);
+        return $jsondata;
 
+
+    }
+
+
+    public function getPlaceSuggestNames()
+    {
+
+        $response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
+
+        return json_decode($response->getBody(),true);
 
     }
 

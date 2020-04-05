@@ -35,5 +35,7 @@ Route::get('/categoryParser', function () {
 Route::get('/pyTest', function () {
 
     $htmlParser = new HtmlParser('www.google.com');
-    return $htmlParser->getPlaceSuggestNames();
+
+    log::info(json_encode( $htmlParser->getPlaceSuggestNamesFromPython()));
+    return $htmlParser->getPlaceSuggestNamesFromPython();
 });
