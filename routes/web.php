@@ -1,6 +1,7 @@
 <?php
 
 use App\Classes\HtmlParser;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
@@ -32,10 +33,14 @@ Route::get('/categoryParser', function () {
 });
 
 
-Route::get('/pyTest', function () {
+Route::get('/pyTest', function (Request $request) {
 
-    $htmlParser = new HtmlParser('www.google.com');
+    if( filter_var($request->input('url'),FILTER_VALIDATE_URL)===false){
+        return 'illegal input';
+    }
 
-    log::info(json_encode( $htmlParser->getPlaceSuggestNamesFromPython()));
+    $htmlParser = new HtmlParser($request->input('url'));
+
     return $htmlParser->getPlaceSuggestNamesFromPython();
+
 });
