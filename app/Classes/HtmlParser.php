@@ -22,15 +22,11 @@ class HtmlParser
     public function getPlaceSuggestNamesFromPython()
     {
 
-        //$response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
 
-        $jsondata= exec("python  ".env('PY_FILE_PATH'). " 'https://www.tutorialspoint.com/python/python_command_line_arguments.htm'");
-
-
-        //return json_decode($response->getBody(),true);
+        $jsonData= exec(env('PY_BIN_PATH','python'). "  ".env('PY_FILE_PATH'). " '".$this->url."'");
 
 
-        return $jsondata;
+        return $jsonData;
 
 
     }
