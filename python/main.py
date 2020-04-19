@@ -1,12 +1,17 @@
 import sys
 
 from Classes import Address
+from Classes import PlaceName
 from Classes import URLs
 
-try:
+if len(sys.argv) > 1:
     url = sys.argv[1]
-    bodyDom = URLs.URLs.getSoupBodyFromURL(url)
-    print(Address.Address.getAddressesFromSoupBody(bodyDom))
-except:
-    bodyDom = URLs.URLs.getSoupBodyFromURL('https://www.walkerland.com.tw/article/view/257122?page=full')
-    print(Address.Address.getAddressesFromSoupBody(bodyDom))
+else:
+    url = 'https://www.walkerland.com.tw/article/view/257122?page=full'
+
+soup = URLs.URLs.getSoupFromURL(url)
+resultDict = {'addresss'}
+addresses = Address.Address.getAddressesFromSoupBody(soup.body())
+placeNames = PlaceName.PlaceName.getPlaceNameKeywordsFromSoup(soup)
+
+print({'addresses': addresses, 'placeNames': placeNames})

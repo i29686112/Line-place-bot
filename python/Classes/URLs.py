@@ -11,13 +11,12 @@ class URLs:
         pass
 
     @staticmethod
-    def getSoupBodyFromURL(url):
+    def getSoupFromURL(url):
 
         r = requests.get(url)
 
         if r.status_code == requests.codes.ok:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            return soup.body()
+            return BeautifulSoup(r.text, 'html.parser')
 
 
         else:
