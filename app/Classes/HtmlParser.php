@@ -11,22 +11,25 @@ class HtmlParser
     private $url;
 
     /**
+     * @var URLParseResult
+     */
+    private $urlParseResult;
+
+    /**
      * HtmlParser constructor.
      * @param mixed $url
      */
     public function __construct($url)
     {
         $this->url=$url;
+
+        $this->generateJsonData();
     }
 
     public function getPlaceSuggestNamesFromPython()
     {
 
-
-        $jsonData= exec(env('PY_BIN_PATH','python'). "  ".env('PY_FILE_PATH'). " '".$this->url."'");
-
-
-        return $jsonData;
+        return  $this->urlParseResult;
 
 
     }
@@ -35,9 +38,12 @@ class HtmlParser
     public function getPlaceSuggestNames()
     {
 
-        $response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
+        //$response = (new Client())->request('get',env("PLACE_NAME_PARSE_URL")."?url=". $this->url);
 
-        return json_decode($response->getBody(),true);
+        //return json_decode($response->getBody(),true);
+
+        return  $this->urlParseResult->placeNames;
+
 
     }
 
@@ -55,11 +61,24 @@ class HtmlParser
     public function getPlaceSuggestAddresses()
     {
 
-        $response = (new Client())->request('get',env("ADDRESS_PARSE_URL")."?url=". $this->url);
+        //$response = (new Client())->request('get',env("ADDRESS_PARSE_URL")."?url=". $this->url);
 
-        return json_decode($response->getBody(),true);
+        return  $this->urlParseResult->addresses;
 
         //return ['address','foo','boo'];
+
+    }
+
+    private function generateJsonData(): void
+    {
+        $urlParseResult = exec(env('PY_BIN_PATH', 'python') . "  " . env('PY_FILE_PATH') . " '" . $this->url . "'");
+
+        $urlParseResult = str_replace("'", "\"", $urlParseResult);
+
+        $urlParseResult = json_decode($urlParseResult, true);
+
+        $this->urlParseResult=URLParseResult::createFromArray($urlParseResult);
+
 
     }
 }

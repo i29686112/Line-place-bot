@@ -26,12 +26,14 @@ class LineWebHookController extends Controller
 
         if (!$request->all()) return 'Empty input';
 
-
         $line = new Line(json_encode($request->all()));
 
         $resultText="";
 
-        if($line->getPlace()){
+        if(stripos($line->getReplyToken(),'00000000')!==false){
+            return "hi, web hook";
+        }
+        else if($line->getPlace()){
 
             $resultText = $this->newPlaceStoreConversation($lineBot, $line);
 

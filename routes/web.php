@@ -41,6 +41,10 @@ Route::get('/pyTest', function (Request $request) {
 
     $htmlParser = new HtmlParser($request->input('url'));
 
-    return $htmlParser->getPlaceSuggestNamesFromPython();
+    $placeSuggestNamesFromPython = json_encode($htmlParser->getPlaceSuggestNamesFromPython());
+
+    log::info($placeSuggestNamesFromPython);
+
+    return $placeSuggestNamesFromPython;
 
 });
